@@ -10,8 +10,8 @@ class EachResult extends React.Component{
         // kUtil.copyToClipBoard(this.props.content);
         kUtil.copyToClipBoard(e.target.innerText);
         var config={};
-        config.content="copy successfully!";
-        config.icon=<Icon type="smile" style={{color:"#FE8E14"}}></Icon>;
+        config.content="copied successfully!";
+        config.icon=<Icon type="copy" style={{color:"#FE8E14"}}></Icon>;
         message.config({
             top:window.innerHeight-180,
             duration:1.5,
@@ -312,13 +312,13 @@ class Scanner extends React.Component{
                 )
             });    
             // console.log(scanner.getResolution());
-            console.log(scanner.getCompatibility());
+            // console.log(scanner.getCompatibility());
             updateFrame();      //needed updateFrame here to get real resolution
 
         }catch(e){
             console.log(e);
             var config={};
-            config.content="No camera availble!\n"+e;
+            config.content="No camera available!\n"+e;
             config.icon=<Icon type="frown" style={{color:"#FE8E14"}}></Icon>;
             message.config({
                 top:window.innerHeight/2,
@@ -467,15 +467,24 @@ class Scanner extends React.Component{
                 }
             </ReactCSSTransitionGroup>           
             
-            <div id='scanner' style={{position:"absolute",width:"100%"}}>
+            {/* <div id='scanner' style={{position:"absolute",width:"100%"}}>
                 <div className="video-container">
                     <video style={{position:"absolute", left:"50%",top:"50%", transform:"translate(-50%,-50%)"}} className='dbrScanner-video custom-video' playsInline={true}></video>
                         <div style={{position:"absolute", left:"50%",top:"50%", transform:"translate(-50%,-50%)", width:this.state.resolution[0], height:this.state.resolution[1]}}>
                         {allCanvas}
                     </div>
                 </div>
-            </div>
+            </div> */}
             
+                <div id='scanner'>
+                    <div className="video-container">
+                        <video className='dbrScanner-video custom-video' playsInline={true}></video>
+                        <div >
+                            {allCanvas}
+                        </div>
+                    </div>
+                </div>
+
             <Result resultsInfo={this.state.resultsInfo}></Result>
             {
                 this.state.cameraList.length&&

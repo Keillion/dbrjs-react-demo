@@ -23,7 +23,7 @@ function ScannerArea(props){
                 </label> */}
             </div>
             <div className="tip-info">
-                <p>Put the code in the box and scan it automatically.</p>
+                <p>Line up your barcode within the box.</p>
             </div>
         </div>
     )

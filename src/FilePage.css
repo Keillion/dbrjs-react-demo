@@ -36,19 +36,22 @@
 
 .upload{
     position: absolute;
+    width: 90%;
+    height: 90%;
     left: 50%;
     transform: translate(-50%);
     display: block;
-    /* border: 2px dashed gray;
-    border-radius: 3px;
-    text-align: center; */
-    /* background: rgba(0, 0, 0,0.05); */
+    border: 2px dashed #FE8E14;
+    border-radius: 5px;
+    text-align: center;
+    background: rgba(0, 0, 0,0.05);
 }
 
 .upload .upload-bg{
-    position: relative;
-    padding: 80px;
+    /* position: relative;
+    padding: 280px; */
     color: gray;
+    font-size: large;
 }
 
 .upload .upload-bg .upload-box{
