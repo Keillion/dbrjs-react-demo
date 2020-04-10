@@ -1,40 +1,44 @@
-@media(max-width: 80vh){
-    .decodefile-result-list{
-        position:absolute;
-        bottom:0;
-        width:100%;
+@media(max-width: 480px) {
+    .decodefile-result-list {
+        max-height: 30vh;
+        overflow: auto;
+        position: absolute;
+        bottom: 0;
+        width: 100%;
         text-align: center;
-        background-color: rgba(0,0,0,0.6);
+        background-color: rgba(0, 0, 0, 0.8);
         color: white;
     }
 }
 
-@media(min-width:80vh){
-    .decodefile-result-list{
-        position:absolute;
+@media(min-width: 480px) {
+    .decodefile-result-list {
+        max-height: 100vh;
+        overflow: auto;
+        position: absolute;
         width: 30%;
         right: 0;
         top: 0;
         text-align: center;
-        background-color: rgba(0,0,0,0.6);
+        background-color: rgba(0, 0, 0, 0.8);
         color: white;
     }
 }
 
-.file-container{
+.file-container {
     width: 100%;
     height: 100%;
     position: absolute;
     background-color: white;
-    top:0;
+    top: 0;
 }
 
-.upload-container{
+.upload-container {
     position: relative;
     height: 100%;
 }
 
-.upload{
+.upload {
     position: absolute;
     width: 90%;
     height: 90%;
@@ -44,24 +48,28 @@
     border: 2px dashed #FE8E14;
     border-radius: 5px;
     text-align: center;
-    background: rgba(0, 0, 0,0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
-.upload .upload-bg{
+.upload .upload-bg {
     /* position: relative;
     padding: 280px; */
     color: gray;
     font-size: large;
 }
 
-.upload .upload-bg .upload-box{
+.upload .upload-bg .upload-box {
     position: absolute;
+    width: 100%;
+    height: 100%;
     left: 50%;
     top: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
+    max-width: 100%;
+    max-height: 100%;
 }
 
-#upload-label{
+#upload-label {
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -72,10 +80,34 @@
     top: 0;
 }
 
-.custom-upload-box{
+.custom-upload-box {
     position: absolute;
     left: 50%;
-    top:50%;
-    transform: translate(-50%,-50%)
+    top: 50%;
+    transform: translate(-50%, -50%)
 }
 
+img.uploadedImg {
+    max-width: 100%;
+    max-height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+svg.dataPoints {
+    max-width: 100%;
+    max-height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+polygon.resultRect {
+    stroke: #FF774E;
+    stroke-width: 3px;
+    fill: #FF774E;
+    fill-opacity: 0.2;
+}

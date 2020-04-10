@@ -49,10 +49,16 @@ class FilePage extends React.Component {
             resultsInfo: "",
             ...settingsFromPage,
             isloadingNewFile: false,
+            resultsInfo: []
         };
+        this._image = React.createRef();
     }
 
+    // force rerender when resizing to align result points to image.
+    onResize = () => this.forceUpdate()
+
     componentDidMount() {
+        window.addEventListener('resize', this.onResize);
         Dynamsoft = window.Dynamsoft;
         Dynamsoft.BarcodeReader.createInstance().then((r) => {
             reader = r;
@@ -73,6 +79,7 @@ class FilePage extends React.Component {
     componentWillUnmount() {
         reader && reader.destroy();
         reader = null;
+        window.removeEventListener('resize', this.onResize);
     }
 
     handleChange = (file) => {
@@ -101,16 +108,18 @@ class FilePage extends React.Component {
             duration: 2,
         });
 
-        // var settings= await reader.getRuntimeSettings();
-        // settings.barcodeFormatIds=this.state.barcodeFormat;
-        // settings.localizationModes=this.state.localization;
-        // settings.deblurLevel = this.state.deblurLevel;
-        // console.log(settings);
+        // var settings = await reader.getRuntimeSettings();
+        // settings.resultCoordinateType = 2 //RCT_PERCENTAGE
+        // // settings.barcodeFormatIds=this.state.barcodeFormat;
+        // // settings.localizationModes=this.state.localization;
+        // // settings.deblurLevel = this.state.deblurLevel;
+        // // console.log(settings);
         // await reader.updateRuntimeSettings(settings);
 
         reader
             .decode(file)
             .then((results) => {
+                console.log(this._image)
                 if (results.length > 0) {
                     console.log(results);
                     var txts = [];
@@ -121,13 +130,13 @@ class FilePage extends React.Component {
                         resultsInfo: results,
                     });
 
-                    config.content = "Found " + results.length + " barcode!";
+                    config.content = "Found " + results.length + (results.length == 1 ? " barcode!" : " barcodes!");
                     config.icon = (
                         <Icon type="check" style={{ color: "#FE8E14" }}></Icon>
                     );
                     message.open(config);
                 } else {
-                    config.content = "No barcode found!";
+                    config.content = "No barcodes found!";
                     config.icon = (
                         <Icon type="close" style={{ color: "#FE8E14" }}></Icon>
                     );
@@ -138,7 +147,7 @@ class FilePage extends React.Component {
                 }
             })
             .catch((e) => {
-                config.content = "Not supported image file!";
+                config.content = "Unsupported image file!";
                 config.icon = (
                     <Icon type="frown" style={{ color: "#FE8E14" }}></Icon>
                 );
@@ -163,11 +172,18 @@ class FilePage extends React.Component {
     render() {
         const uploadButton = (
             <div className="custom-upload-box">
-                <Icon type={this.state.loading ? "loading" : "plus"} />
-                <div className="ant-upload-text">Upload</div>
+                <Icon type={this.state.loading ? "loading" : "upload"} style={{
+                    fontSize: '43px'
+                }} />
+                <div className="ant-upload-text">Upload Image</div>
             </div>
         );
         const { imageUrl } = this.state;
+
+        if (this._image.current) {
+            // console.log(this._image.current.width + " x " + this._image.current.height)
+            // console.log(this.state.resultsInfo)
+        }
 
         return (
             <>
@@ -183,9 +199,9 @@ class FilePage extends React.Component {
                     >
                         <div className="upload-bg">
                             <div className="upload-box">
-                                <Icon type="upload" style={{
-                                    fontSize: '43px'}}/>
-                                <div>upload image</div>
+                                {this.state.isloadingNewFile && imageUrl ? <img className='uploadedImg' ref={this._image} src={imageUrl} /> : uploadButton}
+                                {/* TODO: calculation issue on mobile related to SDK */}
+                                {this._image.current && this.state.resultsInfo.map((result, i) => <svg key={i} className='dataPoints' style={{ width: this._image.current.width, height: this._image.current.height }}><polygon className='resultRect' points={`${(result.LocalizationResult.x1 / this._image.current.naturalWidth * this._image.current.width)},${(result.LocalizationResult.y1 / this._image.current.naturalHeight * this._image.current.height)} ${result.LocalizationResult.x2 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y2 / this._image.current.naturalHeight * this._image.current.height} ${result.LocalizationResult.x3 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y3 / this._image.current.naturalHeight * this._image.current.height} ${result.LocalizationResult.x4 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y4 / this._image.current.naturalHeight * this._image.current.height}`} ></polygon></svg>)}
                             </div>
                         </div>
                         <label id="upload-label" htmlFor="input"></label>
@@ -193,20 +209,25 @@ class FilePage extends React.Component {
                             type="file"
                             id="input"
                             hidden
-                            onChange={(e) =>
-                                this.handleChange(e.target.files[0])
+                            accept="image/png, image/jpeg, image/gif"
+                            onChange={
+                                (e) => this.handleChange(e.target.files[0])
                             }
-                        ></input>
+                            onClick={
+                                (e) => e.target.value = null
+                            } >
+                        </input>
                     </div>
                 </div>
 
-                {this.state.resultsInfo.length && (
+                {
                     <List
                         // header={<div>Scanning Result</div>}
                         className="decodefile-result-list"
                         dataSource={this.state.resultsInfo}
                         bordered
                         size="small"
+                        style={{ visibility: this.state.resultsInfo.length ? "visible" : "hidden" }}
                         renderItem={(Item) => (
                             <List.Item style={{ display: "list-item" }}>
                                 <Typography.Text>
@@ -223,17 +244,17 @@ class FilePage extends React.Component {
                                         {Item.BarcodeText}
                                     </a>
                                 ) : (
-                                    <span
-                                        onClick={this.copyScannerResult}
-                                        style={{ fontSize: 16 }}
-                                    >
-                                        {Item.BarcodeText}
-                                    </span>
-                                )}
+                                        <span
+                                            onClick={this.copyScannerResult}
+                                            style={{ fontSize: 16 }}
+                                        >
+                                            {Item.BarcodeText}
+                                        </span>
+                                    )}
                             </List.Item>
                         )}
                     ></List>
-                )}
+                }
             </>
         );
     }

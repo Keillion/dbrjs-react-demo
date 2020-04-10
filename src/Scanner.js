@@ -300,7 +300,7 @@ class Scanner extends React.Component{
 
         try{
             await scanner.show();
-            var bSupportTorch = scanner.getCompatibility().torch;
+            var bSupportTorch = scanner.getCapabilities().torch;
             // alert(bSupportTorch);
             var cameras = await scanner.getAllCameras();
             this.setState({
