@@ -3,6 +3,8 @@ import { PageHeader, Upload, Icon, message, List, Typography } from "antd";
 import "./FilePage.css";
 import "./Layout.css";
 import { settingsFromPage } from "./SettingPage";
+import Canvas from './canvas';
+
 
 function getBase64(img, callback) {
     const reader = new FileReader();
@@ -49,7 +51,7 @@ class FilePage extends React.Component {
             resultsInfo: "",
             ...settingsFromPage,
             isloadingNewFile: false,
-            resultsInfo: []
+            resultPoints: []
         };
         this._image = React.createRef();
     }
@@ -108,13 +110,13 @@ class FilePage extends React.Component {
             duration: 2,
         });
 
-        // var settings = await reader.getRuntimeSettings();
-        // settings.resultCoordinateType = 2 //RCT_PERCENTAGE
-        // // settings.barcodeFormatIds=this.state.barcodeFormat;
-        // // settings.localizationModes=this.state.localization;
-        // // settings.deblurLevel = this.state.deblurLevel;
-        // // console.log(settings);
-        // await reader.updateRuntimeSettings(settings);
+        var settings = await reader.getRuntimeSettings();
+        settings.resultCoordinateType = 2 //RCT_PERCENTAGE
+        // settings.barcodeFormatIds=this.state.barcodeFormat;
+        // settings.localizationModes=this.state.localization;
+        // settings.deblurLevel = this.state.deblurLevel;
+        // console.log(settings);
+        await reader.updateRuntimeSettings(settings);
 
         reader
             .decode(file)
@@ -123,10 +125,13 @@ class FilePage extends React.Component {
                 if (results.length > 0) {
                     console.log(results);
                     var txts = [];
+                    let resultPointsPerFrame = [];
                     for (var i = 0; i < results.length; ++i) {
                         txts.push(results[i].BarcodeText);
+                        resultPointsPerFrame.push(results[i].LocalizationResult.ResultPoints);
                     }
                     this.setState({
+                        resultPoints: resultPointsPerFrame,
                         resultsInfo: results,
                     });
 
@@ -201,7 +206,10 @@ class FilePage extends React.Component {
                             <div className="upload-box">
                                 {this.state.isloadingNewFile && imageUrl ? <img className='uploadedImg' ref={this._image} src={imageUrl} /> : uploadButton}
                                 {/* TODO: calculation issue on mobile related to SDK */}
-                                {this._image.current && this.state.resultsInfo.map((result, i) => <svg key={i} className='dataPoints' style={{ width: this._image.current.width, height: this._image.current.height }}><polygon className='resultRect' points={`${(result.LocalizationResult.x1 / this._image.current.naturalWidth * this._image.current.width)},${(result.LocalizationResult.y1 / this._image.current.naturalHeight * this._image.current.height)} ${result.LocalizationResult.x2 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y2 / this._image.current.naturalHeight * this._image.current.height} ${result.LocalizationResult.x3 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y3 / this._image.current.naturalHeight * this._image.current.height} ${result.LocalizationResult.x4 / this._image.current.naturalWidth * this._image.current.width},${result.LocalizationResult.y4 / this._image.current.naturalHeight * this._image.current.height}`} ></polygon></svg>)}
+                                {this._image.current && this.state.resultsInfo.length > 0 && <div className='dataWrapper' style={{ width: this._image.current.width, height: this._image.current.height }} >
+                                {this._image.current && this.state.resultPoints.map((eachResult, index) =>
+                                    <Canvas key={index} point={eachResult}></Canvas>)} 
+                                    </div> }
                             </div>
                         </div>
                         <label id="upload-label" htmlFor="input"></label>

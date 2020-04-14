@@ -65,16 +65,16 @@ class Result extends React.Component{
 }
 
 
-class Canvas extends React.Component{
-    constructor(props){
+class Canvas extends React.Component {
+    constructor(props) {
         super(props);
-        this.state=({
-            isDraw:false
+        this.state = ({
+            isDraw: false
         });
         this.canvas = React.createRef();
     }
 
-    componentDidUpdate(){
+    componentDidUpdate() {
         let point = this.props.point;
         let x1 = point[0].split(',')[0];
         let y1 = point[0].split(',')[1];
@@ -102,11 +102,11 @@ class Canvas extends React.Component{
 
         var canvas = this.canvas.current;
         //console.log(_x1,_y1,_x2,_y2,_x3,_y3,_x4,_y4);
-        if(canvas.getContext){
+        if (canvas.getContext) {
             //debugger;
             let ctx = canvas.getContext("2d");
             ctx.fillStyle = 'rgba(254,180,32,0.5)';
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.beginPath();
             ctx.moveTo(_x1, _y1);
             ctx.lineTo(_x2, _y2);
@@ -117,7 +117,7 @@ class Canvas extends React.Component{
 
     }
 
-    render(){
+    render() {
         let point = this.props.point;
         let x1 = point[0].split(',')[0];
         let y1 = point[0].split(',')[1];
@@ -132,26 +132,25 @@ class Canvas extends React.Component{
         let rightMax = Math.max(x1, x2, x3, x4);
         let topMin = Math.min(y1, y2, y3, y4);
         let bottomMax = Math.max(y1, y2, y3, y4);
-        let cvsStyle={
-            position:"absolute",
-            left:leftMin+"px",
-            top:topMin+"px",
+        let cvsStyle = {
+            position: "absolute",
+            left: leftMin + "px",
+            top: topMin + "px",
             //background:"#80008021",
         };
-        return(
+        return (
             <>
-            {
-                <canvas
-                ref={this.canvas}
-                width={rightMax-leftMin} height={bottomMax-topMin} style={cvsStyle}>
-                </canvas>
-            }
+                {
+                    <canvas
+                        ref={this.canvas}
+                        width={rightMax - leftMin} height={bottomMax - topMin} style={cvsStyle}>
+                    </canvas>
+                }
             </>
-            
+
         )
     }
 }
-
 // const Dynamsoft = window.Dynamsoft;
 var Dynamsoft;
 let scanner = null;
@@ -259,6 +258,8 @@ class Scanner extends React.Component{
         settings.barcodeFormatIds=this.state.barcodeFormat;
         settings.localizationModes=this.state.localization;
         settings.deblurLevel = this.state.deblurLevel;
+        settings.scaleDownThreshold = this.state.scaleDownThreshold;
+        settings.timeout = this.state.timeout;
         await scanner.updateRuntimeSettings(settings);
         updateFrame();      //needed here to update region area
         
@@ -351,12 +352,10 @@ class Scanner extends React.Component{
     componentWillMount(){
         Dynamsoft = window.Dynamsoft;
         this.showScanner();
-        console.log('mounted')
     }
 
     componentWillUnmount(){
         (async function(){
-            console.log('umounted')
             scanner.onFrameRead=false;
             scanner!==null&&scanner.close();
             scanner!==null&&await scanner.destroy();

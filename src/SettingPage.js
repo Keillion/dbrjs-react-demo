@@ -25,7 +25,9 @@ let settingsFromPage = {
     resolution:[1280,720],
     barcodeFormat:undefined,
     localization:[2,0,0,0,0,0,0,0],
-    deblurlevel : 0,
+    deblurlevel: 0, 
+    scaleDownThreshold: 2300,
+    timeout: 10000,
 };
 
 
