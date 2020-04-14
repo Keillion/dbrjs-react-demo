@@ -181,8 +181,25 @@ class BarcodeFormat extends React.Component{
 
 class ScanSettings extends React.Component{
     onSelectChange = e =>{
-        settingsFromPage.localization = (e.target.value === "fast")?[2,0,0,0,0,0,0,0]:[2,4,8,0,0,0,0,0];
-        settingsFromPage.deblurlevel = 0;
+        if (e.target.value === "accurate") {
+            settingsFromPage.localization = [2, 16, 4, 8, 0, 0, 0, 0]
+            settingsFromPage.deblurlevel = 5;
+            settingsFromPage.expectedBarcodesCount = 512;
+            settingsFromPage.scaleDownThreshold = 100000;
+            settingsFromPage.timeout = 100000;
+        } else if (e.target.value === "balance") {
+            settingsFromPage.localization = [2, 16, 0, 0, 0, 0, 0, 0];
+            settingsFromPage.deblurlevel = 3;
+            settingsFromPage.expectedBarcodesCount = 512;
+            settingsFromPage.scaleDownThreshold = 2300;
+            settingsFromPage.timeout = 100000;
+        } else { //speed
+            settingsFromPage.localization = [2, 0, 0, 0, 0, 0, 0, 0];
+            settingsFromPage.deblurlevel = 0;
+            settingsFromPage.expectedBarcodesCount = 0;
+            settingsFromPage.scaleDownThreshold = 2300;
+            settingsFromPage.timeout = 10000;
+        }
     };
 
     render(){
@@ -198,7 +215,8 @@ class ScanSettings extends React.Component{
                     }
                 >
                     <Radio.Group style={{paddingLeft:'20px'}} onChange={this.onSelectChange.bind(this)} defaultValue='fast'>
-                        <Radio style={AttributeStyle} value="fast">Fast</Radio>
+                        <Radio style={AttributeStyle} value="fast">Fastest</Radio>
+                        <Radio style={AttributeStyle} value="balance">Balance</Radio>
                         <Radio style={AttributeStyle} value="accurate">Most Accurate</Radio>
                     </Radio.Group>
                 </SubMenu> 

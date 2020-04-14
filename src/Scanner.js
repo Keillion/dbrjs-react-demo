@@ -285,7 +285,6 @@ class Scanner extends React.Component{
         };
 
         scanner.onUnduplicatedRead = (txt, result) => {
-
             // remove info after 5s
             this.addLifeForResultInfo(result);
 
@@ -352,10 +351,12 @@ class Scanner extends React.Component{
     componentWillMount(){
         Dynamsoft = window.Dynamsoft;
         this.showScanner();
+        console.log('mounted')
     }
 
     componentWillUnmount(){
         (async function(){
+            console.log('umounted')
             scanner.onFrameRead=false;
             scanner!==null&&scanner.close();
             scanner!==null&&await scanner.destroy();
@@ -459,11 +460,11 @@ class Scanner extends React.Component{
             >
                 {
                     !this.state.isOpen&&
-                    <Spin 
-                    className="waiting" 
-                    tip="Accessing Camera list..." 
-                    indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" ,}}></Icon>}>
-                    </Spin>    
+                        <div className='overlay'><Spin
+                            className="waiting"
+                            tip="Accessing Camera..."
+                            indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" }}></Icon>}>
+                        </Spin></div> 
                 }
             </ReactCSSTransitionGroup>           
             

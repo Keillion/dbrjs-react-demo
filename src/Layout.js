@@ -96,7 +96,7 @@ class Main extends React.Component{
         })       
     }
 
-    fullSceenClickHandler(event){
+    fullScreenClickHandler(event){
         this.switchFullScreen();
     }   
 
@@ -125,7 +125,7 @@ class Main extends React.Component{
                 </div>
             }
             <div className="double-click" >
-                <label onClick={this.fullSceenClickHandler.bind(this)}>click {this.state.isFullScreen&&"exit"} full screen</label>
+                <label onClick={this.fullScreenClickHandler.bind(this)}>click {this.state.isFullScreen&&"exit"} full screen</label>
             </div>
             <div className="selImgBtn-container">
                 <Icon type="plus" style={{fontSize:"2rem",color:"#FE8E14"}} onClick={this.handleShowFilePage.bind(this)}></Icon>
