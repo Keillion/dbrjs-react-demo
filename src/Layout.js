@@ -110,7 +110,8 @@ class Main extends React.Component{
                     <ScannerArea region={regionSize}></ScannerArea>
                 }
                 <div className="dynam-info">
-                    <a href="https://www.dynamsoft.com" ><img src="img/logo-dynamsoft-blackBg-190x47.png" alt="logo"></img></a>
+                    <img src="img/logo-dynamsoft-blackBg-190x47.png" alt="logo"></img><br/>
+                    Interested? <a href="https://www.dynamsoft.com/Company/Contact.aspx" style={{ color: "white"}}><u>Let's talk!</u></a>
                 </div>
                 <RegionBtn handleRegion={this.handleRegion.bind(this)} isFullRegion={this.state.isFullRegion}></RegionBtn>
             </div>

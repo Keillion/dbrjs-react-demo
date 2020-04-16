@@ -2,7 +2,8 @@ import React from 'react';
 import {Icon,Spin,message,Select} from 'antd';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import './Layout.css';
-import {settingsFromPage} from './SettingPage';
+import { settingsFromPage } from './SettingPage';
+//import Canvas from './canvas';
 
 class EachResult extends React.Component{
     copyScannerResult=e=>{
@@ -174,6 +175,7 @@ class Scanner extends React.Component{
             cameraOptions:null,
             bOpenTorch: false
         });
+        this.video = React.createRef();
 
     }
 
@@ -478,8 +480,8 @@ class Scanner extends React.Component{
             
                 <div id='scanner'>
                     <div className="video-container">
-                        <video className='dbrScanner-video custom-video' playsInline={true}></video>
-                        <div >
+                        <video className='dbrScanner-video custom-video' playsInline={true} ref={this.video}></video>
+                        <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: this.state.resolution[0], height: this.state.resolution[1], maxWidth: "100%", maxHeight: "100%" }}>
                             {allCanvas}
                         </div>
                     </div>

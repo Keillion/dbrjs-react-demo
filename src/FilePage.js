@@ -235,7 +235,7 @@ class FilePage extends React.Component {
                         dataSource={this.state.resultsInfo}
                         bordered
                         size="small"
-                        style={{ visibility: this.state.resultsInfo.length ? "visible" : "hidden" }}
+                        style={{ visibility: (this.state.resultsInfo.length && this._image.current) ? "visible" : "hidden" }}
                         renderItem={(Item) => (
                             <List.Item style={{ display: "list-item" }}>
                                 <Typography.Text>
