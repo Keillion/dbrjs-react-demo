@@ -1,27 +1,27 @@
 import React from 'react';
-import {Icon,Spin,message,Select} from 'antd';
+import { Icon, Spin, message, Select } from 'antd';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import './Layout.css';
 import { settingsFromPage } from './SettingPage';
-//import Canvas from './canvas';
+// import Canvas from './canvas';
 
-class EachResult extends React.Component{
-    copyScannerResult=e=>{
-        const kUtil=window.kUtil;
+class EachResult extends React.Component {
+    copyScannerResult = e => {
+        const kUtil = window.kUtil;
         // kUtil.copyToClipBoard(this.props.content);
         kUtil.copyToClipBoard(e.target.innerText);
-        var config={};
-        config.content="copied successfully!";
-        config.icon=<Icon type="copy" style={{color:"#FE8E14"}}></Icon>;
+        var config = {};
+        config.content = "copied successfully!";
+        config.icon = <Icon type="copy" style={{ color: "#FE8E14" }}></Icon>;
         message.config({
-            top:window.innerHeight-180,
-            duration:1.5,
+            top: window.innerHeight - 180,
+            duration: 1.5,
         });
         message.open(config);
     }
 
-    
-    render(){
+
+    render() {
         let txt = this.props.content;
         let possibleLink = txt;
         if (!txt.startsWith('http') && (txt.startsWith('www') || -1 !== txt.indexOf('.com') ||
@@ -29,35 +29,35 @@ class EachResult extends React.Component{
             possibleLink = 'http://' + txt;
         }
         let isLink = possibleLink.startsWith('http');
-        return(
+        return (
             <div className="result-content">
                 <>
-                    <><span style={{color:"#FE8E14"}}>{this.props.format}: </span></>
+                    <><span style={{ color: "#FE8E14" }}>{this.props.format}: </span></>
                     {
-                        isLink?
-                        <a href={possibleLink} target={"_blank"} style={{textDecoration:"underline"}} >{this.props.content}</a>
-                        : <span onClick={this.copyScannerResult} style={{fontSize:16}}>{this.props.content}</span>
+                        isLink ?
+                            <a href={possibleLink} target={"_blank"} style={{ textDecoration: "underline" }} >{this.props.content}</a>
+                            : <span onClick={this.copyScannerResult} style={{ fontSize: 16 }}>{this.props.content}</span>
                     }
                     {/* <><span style={{color:"#FE8E14"}}> x {this.props.count}</span></> */}
-                    <><span style={{color:"#FE8E14"}}></span></>
+                    <><span style={{ color: "#FE8E14" }}></span></>
                     {/* <Button type="link" icon="copy" size="small" style={{float:"right"}}  onClick={this.copyScannerResult.bind(this)}></Button> */}
                 </>
             </div>
-            )
-        }
+        )
+    }
 }
 
 
-class Result extends React.Component{
-    render(){
-        const resultItems = this.props.resultsInfo.slice(-3).map((ri,index)=>
-            <EachResult key={index} content = {ri.result!==undefined?ri.result.BarcodeText:ri.BarcodeText} 
-            count={ri.count} 
-            format={ri.result!==undefined?ri.result.BarcodeFormatString:ri.BarcodeFormatString}>
+class Result extends React.Component {
+    render() {
+        const resultItems = this.props.resultsInfo.slice(-3).map((ri, index) =>
+            <EachResult key={index} content={ri.result !== undefined ? ri.result.BarcodeText : ri.BarcodeText}
+                count={ri.count}
+                format={ri.result !== undefined ? ri.result.BarcodeFormatString : ri.BarcodeFormatString}>
             </EachResult>
         );
-        
-        return(
+
+        return (
             <div className="result-container">
                 {resultItems}
             </div>
@@ -137,14 +137,16 @@ class Canvas extends React.Component {
             position: "absolute",
             left: leftMin + "px",
             top: topMin + "px",
-            //background:"#80008021",
+            //background:"#80008021", 
         };
         return (
             <>
                 {
                     <canvas
-                        ref={this.canvas}
-                        width={rightMax - leftMin} height={bottomMax - topMin} style={cvsStyle}>
+                        ref={this.canvas} 
+                        width={rightMax - leftMin} 
+                        height={bottomMax - topMin}
+                        style={cvsStyle}>
                     </canvas>
                 }
             </>
@@ -152,27 +154,29 @@ class Canvas extends React.Component {
         )
     }
 }
+
+
 // const Dynamsoft = window.Dynamsoft;
 var Dynamsoft;
 let scanner = null;
 
 
-class Scanner extends React.Component{
-    constructor(props){
+class Scanner extends React.Component {
+    constructor(props) {
         super(props);
-        this.state=({
-            resultsInfo:[],
-            isOpen:false,
-            resultsPoint:[],
+        this.state = ({
+            resultsInfo: [],
+            isOpen: false,
+            resultsPoint: [],
             // camera:0,
-            cameraList:[],
-            isFullRegion:this.props.isFullRegion,
+            cameraList: [],
+            isFullRegion: this.props.isFullRegion,
             // resolution:settingsFromPage.resolution,
             // barcodeFormat:settingsFromPage.barcodeformat,
             // localization:settingsFromPage.localization,
             // deblurLevel:settingsFromPage.deblurlevel,
             ...settingsFromPage,
-            cameraOptions:null,
+            cameraOptions: null,
             bOpenTorch: false
         });
         this.video = React.createRef();
@@ -180,22 +184,22 @@ class Scanner extends React.Component{
     }
 
 
-    async showScanner(){
-        var updateFrame = ()=>{
-            var regionScale = 1.0*this.props.region/100;
-            var regionWidth =  regionScale*window.innerWidth;
-            var regionHeight = 0.5*regionScale*window.innerHeight;
+    async showScanner() {
+        var updateFrame = () => {
+            var regionScale = 1.0 * this.props.region / 100;
+            var regionWidth = regionScale * window.innerWidth;
+            var regionHeight = 0.5 * regionScale * window.innerHeight;
             var r = this.state.resolution;
             var vW = r[0];
             var vH = r[1];
-            var left,right,top,bottom;
-            regionHeight = regionHeight>=250?250:regionHeight;
-            regionWidth = regionWidth>=250?250:regionHeight;
+            var left, right, top, bottom;
+            regionHeight = regionHeight >= 250 ? 250 : regionHeight;
+            regionWidth = regionWidth >= 250 ? 250 : regionHeight;
             // console.log(r);
-            left = (vW-regionWidth)/2/vW;
-            right = (vW + regionWidth)/2/vW;
-            top = (vH-regionHeight)/2/vH;
-            bottom = (vH+regionHeight)/2/vH;
+            left = (vW - regionWidth) / 2 / vW;
+            right = (vW + regionWidth) / 2 / vW;
+            top = (vH - regionHeight) / 2 / vH;
+            bottom = (vH + regionHeight) / 2 / vH;
             // if(vW>=window.innerWidth){      //resolution > screen width, mainly mobiles
             //     if(regionWidth>=250){
             //         left = (window.innerWidth-regionWidth)/2/vW;
@@ -230,50 +234,51 @@ class Scanner extends React.Component{
 
             //}
 
-            scanner&&scanner.getRuntimeSettings().then(settings=>{
-                if(!this.state.isFullRegion){
+            scanner && scanner.getRuntimeSettings().then(settings => {
+                if (!this.state.isFullRegion) {
                     // console.log(left, right, top, bottom);
-                    settings.region.regionLeft = Math.round(left*100);
-                    settings.region.regionRight = Math.round(right*100);
-                    settings.region.regionTop = Math.round(top*100);
-                    settings.region.regionBottom = Math.round(bottom*100);
-                    settings.region.regionMeasuredByPercentage = 1; 
+                    settings.region.regionLeft = Math.round(left * 100);
+                    settings.region.regionRight = Math.round(right * 100);
+                    settings.region.regionTop = Math.round(top * 100);
+                    settings.region.regionBottom = Math.round(bottom * 100);
+                    settings.region.regionMeasuredByPercentage = 1;
                 }
-                else{
+                else {
                     settings.region.regionLeft = 0;
                     settings.region.regionRight = 100;
                     settings.region.regionTop = 0;
                     settings.region.regionBottom = 100;
-                    settings.region.regionMeasuredByPercentage = 1; 
+                    settings.region.regionMeasuredByPercentage = 1;
                 }
+                
                 scanner.updateRuntimeSettings(settings);
             })
 
         };
 
-        
+
         scanner = await Dynamsoft.BarcodeScanner.createInstance();
         scanner.setUIElement(document.getElementById("scanner"));
-        
-        await scanner.updateVideoSettings({ video: { width: this.state.resolution[0], height:this.state.resolution[1], facingMode: "environment" } });
+
+        await scanner.updateVideoSettings({ video: { width: this.state.resolution[0], height: this.state.resolution[1], facingMode: "environment" } });
         let settings = await scanner.getRuntimeSettings();
-        settings.barcodeFormatIds=this.state.barcodeFormat;
-        settings.localizationModes=this.state.localization;
+        settings.barcodeFormatIds = this.state.barcodeFormat;
+        settings.localizationModes = this.state.localization;
         settings.deblurLevel = this.state.deblurLevel;
         settings.scaleDownThreshold = this.state.scaleDownThreshold;
         settings.timeout = this.state.timeout;
         await scanner.updateRuntimeSettings(settings);
         updateFrame();      //needed here to update region area
-        
+
         scanner.onFrameRead = (results) => {
-            let resultPointsPerFrame=[];
+            let resultPointsPerFrame = [];
             // let arrDiffCodeInfo = this.state.arrDiffCodeInfo;
-            for (let i = 0; i < results.length; i++){
+            for (let i = 0; i < results.length; i++) {
                 let result = results[i];
                 resultPointsPerFrame.push(result.LocalizationResult.ResultPoints);
-                
-                for(let _result of this.state.resultsInfo){
-                    if(_result.barcodeText == result.barcodeText && _result.barcodeFormat == result.barcodeFormat){
+
+                for (let _result of this.state.resultsInfo) {
+                    if (_result.barcodeText == result.barcodeText && _result.barcodeFormat == result.barcodeFormat) {
                         this.addLifeForResultInfo(_result);
                     }
                 }
@@ -281,14 +286,15 @@ class Scanner extends React.Component{
 
             // let resultsInfo = scanner.arrDiffCodeInfo;
             this.setState({
-                resultsPoint:resultPointsPerFrame,
-                isFullRegion:this.props.isFullRegion,
+                resultsPoint: resultPointsPerFrame,
+                isFullRegion: this.props.isFullRegion,
             });
-            scanner!==null&&updateFrame();
+            scanner !== null && updateFrame();
         };
 
         scanner.onUnduplicatedRead = (txt, result) => {
             // remove info after 5s
+            // scanner.pause();
             this.addLifeForResultInfo(result);
 
             // add info to show
@@ -300,7 +306,7 @@ class Scanner extends React.Component{
 
 
 
-        try{
+        try {
             await scanner.show();
             var bSupportTorch = scanner.getCapabilities().torch;
             // alert(bSupportTorch);
@@ -308,29 +314,29 @@ class Scanner extends React.Component{
             this.setState({
                 bSupportTorch: bSupportTorch,
                 resolution: scanner.getResolution(),
-                cameraList:cameras,
-                cameraOptions:cameras.map((cameraOption,index)=>
-                    <Select.Option value={"camera:"+index} key={cameraOption.deviceId}>{cameraOption.label}</Select.Option>
+                cameraList: cameras,
+                cameraOptions: cameras.map((cameraOption, index) =>
+                    <Select.Option value={"camera:" + index} key={cameraOption.deviceId}>{cameraOption.label}</Select.Option>
                 )
-            });    
+            });
             // console.log(scanner.getResolution());
             // console.log(scanner.getCompatibility());
             updateFrame();      //needed updateFrame here to get real resolution
 
-        }catch(e){
+        } catch (e) {
             console.log(e);
-            var config={};
-            config.content="No camera available!\n"+e;
-            config.icon=<Icon type="frown" style={{color:"#FE8E14"}}></Icon>;
+            var config = {};
+            config.content = "No camera available!\n" + e;
+            config.icon = <Icon type="frown" style={{ color: "#FE8E14" }}></Icon>;
             message.config({
-                top:window.innerHeight/2,
-                duration:5,
+                top: window.innerHeight / 2,
+                duration: 5,
             });
             message.open(config);
-        }finally{
+        } finally {
             this.setState({
-                isOpen:!this.state.isOpen
-            });    
+                isOpen: !this.state.isOpen
+            });
         }
     }
 
@@ -340,7 +346,7 @@ class Scanner extends React.Component{
         // cancel remove task
         result.removeResultTimeoutId && clearTimeout(result.removeResultTimeoutId);
         // restore 5s life
-        result.removeResultTimeoutId = setTimeout(()=>{
+        result.removeResultTimeoutId = setTimeout(() => {
             // remove result info
             let resultsInfo = this.state.resultsInfo;
             let pos = resultsInfo.indexOf(result);
@@ -351,47 +357,47 @@ class Scanner extends React.Component{
         }, 5000);
     }
 
-    componentWillMount(){
+    componentWillMount() {
         Dynamsoft = window.Dynamsoft;
         this.showScanner();
     }
 
-    componentWillUnmount(){
-        (async function(){
-            scanner.onFrameRead=false;
-            scanner!==null&&scanner.close();
-            scanner!==null&&await scanner.destroy();
-            scanner=null;
+    componentWillUnmount() {
+        (async function () {
+            scanner.onFrameRead = false;
+            scanner !== null && scanner.close();
+            scanner !== null && await scanner.destroy();
+            scanner = null;
         })()
     }
 
-    handleFullRegion(){
+    handleFullRegion() {
         this.setState({
-            isFullRegion:this.state.isFullRegion,
+            isFullRegion: this.state.isFullRegion,
         })
     }
-   
-    async onSwitchCamera(value){
+
+    async onSwitchCamera(value) {
         var infos = await scanner.getAllCameras();
         await scanner.setCurrentCamera(infos[value.split(":")[1]].deviceId);
         this.setState({
-            camera:value.split(":")[1],
+            camera: value.split(":")[1],
             resolution: scanner.getResolution()
         });
 
 
-        var config={};
-        config.content="Switch to "+infos[value.split(":")[1]].label+" successfully!";
-        config.icon=<Icon type="smile" style={{color:"#FE8E14"}}></Icon>;
+        var config = {};
+        config.content = "Switch to " + infos[value.split(":")[1]].label + " successfully!";
+        config.icon = <Icon type="smile" style={{ color: "#FE8E14" }}></Icon>;
         message.config({
-            top:window.innerHeight-180,
-            duration:1.5,
+            top: window.innerHeight - 180,
+            duration: 1.5,
         });
         message.open(config);
     }
 
-    async onFlashlightClick(){
-        if(this.state.bOpenTorch)
+    async onFlashlightClick() {
+        if (this.state.bOpenTorch)
             await scanner.turnOffTorch();
         else
             await scanner.turnOnTorch();
@@ -400,19 +406,34 @@ class Scanner extends React.Component{
         })
     }
 
-    render(){
-        const allCanvas = this.state.resultsPoint.map((eachResult,index)=>
+    render() {
+        const allCanvas = this.state.resultsPoint.map((eachResult, index) =>
             <Canvas key={index} point={eachResult}></Canvas>
         );
+        var resizeRate = 1;
+        var videoComputedWidth = 1280;
+        var videoComputedHeight = 720;
+        if (this.video.current) {
+            var videoComputedStyle = window.getComputedStyle(this.video.current);
+             videoComputedWidth = Math.round(parseFloat(videoComputedStyle.getPropertyValue('width')));
+             videoComputedHeight = Math.round(parseFloat(videoComputedStyle.getPropertyValue('height')))
 
-        var regionScale = 1.0*this.props.region/100;
-        var regionHeight = 0.5*regionScale*window.innerHeight;
-        regionHeight=regionHeight>=250?250:regionHeight;
-        const flashlightTranslateY = regionHeight/2 - 20;
-        return(
+            console.log("width " + videoComputedWidth + " height " + videoComputedHeight)
+
+            if (videoComputedWidth < this.video.current.videoWidth) {
+                resizeRate = videoComputedWidth / this.video.current.videoWidth;
+                console.log('resize ' + resizeRate)
+            }
+        }
+
+        var regionScale = 1.0 * this.props.region / 100;
+        var regionHeight = 0.5 * regionScale * window.innerHeight;
+        regionHeight = regionHeight >= 250 ? 250 : regionHeight;
+        const flashlightTranslateY = regionHeight / 2 - 20;
+        return (
             <>
-            <style type="text/css">
-                {`
+                <style type="text/css">
+                    {`
                 .waiting{
                     position:absolute;
                     left:50%;
@@ -449,27 +470,27 @@ class Scanner extends React.Component{
                     transition: opacity 2000ms ease-in;
                 }
                 `}
-            </style>
-            <ReactCSSTransitionGroup
-                transitionName="fade"
-                transitionLeave={true}
-                transitionAppear={false}
-                transitionEnter={false}
-                transitionAppearTimeout={500}
-                transitionLeaveTimeout={3500}
-                transitionEnterTimeout={2500}
-            >
-                {
-                    !this.state.isOpen&&
+                </style>
+                <ReactCSSTransitionGroup
+                    transitionName="fade"
+                    transitionLeave={true}
+                    transitionAppear={false}
+                    transitionEnter={false}
+                    transitionAppearTimeout={500}
+                    transitionLeaveTimeout={3500}
+                    transitionEnterTimeout={2500}
+                >
+                    {
+                        !this.state.isOpen &&
                         <div className='overlay'><Spin
                             className="waiting"
                             tip="Accessing Camera..."
                             indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" }}></Icon>}>
-                        </Spin></div> 
-                }
-            </ReactCSSTransitionGroup>           
-            
-            {/* <div id='scanner' style={{position:"absolute",width:"100%"}}>
+                        </Spin></div>
+                    }
+                </ReactCSSTransitionGroup>
+
+                {/* <div id='scanner' style={{position:"absolute",width:"100%"}}>
                 <div className="video-container">
                     <video style={{position:"absolute", left:"50%",top:"50%", transform:"translate(-50%,-50%)"}} className='dbrScanner-video custom-video' playsInline={true}></video>
                         <div style={{position:"absolute", left:"50%",top:"50%", transform:"translate(-50%,-50%)", width:this.state.resolution[0], height:this.state.resolution[1]}}>
@@ -477,39 +498,39 @@ class Scanner extends React.Component{
                     </div>
                 </div>
             </div> */}
-            
+
                 <div id='scanner'>
                     <div className="video-container">
-                        <video className='dbrScanner-video custom-video' playsInline={true} ref={this.video}></video>
-                        <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: this.state.resolution[0], height: this.state.resolution[1], maxWidth: "100%", maxHeight: "100%" }}>
+                        <video style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} className='dbrScanner-video custom-video' playsInline={true} ref={this.video}></video>
+                        <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: this.state.resolution[0], height: this.state.resolution[1] }}>
                             {allCanvas}
                         </div>
                     </div>
                 </div>
 
-            <Result resultsInfo={this.state.resultsInfo}></Result>
-            {
-                this.state.cameraList.length&&
-                <Select onChange={this.onSwitchCamera.bind(this)} 
-                style={{ position:"absolute",top:"60px",left:0,width: "20%",maxWidth:130,border:"0",color:"#FE8E14",opacity:"0.5" }} 
-                // defaultValue={"camera:0"}
-                // placeholder="camera"
-                suffixIcon={<Icon type="camera" style={{color:"#FE8E14"}}></Icon>}
-                defaultActiveFirstOption={false}
-                >
-                    {this.state.cameraOptions}
-                </Select>
-            }
-            {
-                this.state.bSupportTorch&&
-                <label onClick={this.onFlashlightClick.bind(this)} className="flashlight" style={{transform: `translateY(${flashlightTranslateY}px)`}}>
-                    <Icon type="funnel-plot" style={{fontSize:"2rem",color:"#FE8E14"}}></Icon>
-                </label>
-            }
+                <Result resultsInfo={this.state.resultsInfo}></Result>
+                {
+                    this.state.cameraList.length &&
+                    <Select onChange={this.onSwitchCamera.bind(this)}
+                        style={{ position: "absolute", top: "60px", left: 0, width: "20%", maxWidth: 130, border: "0", color: "#FE8E14", opacity: "0.5" }}
+                        // defaultValue={"camera:0"}
+                        // placeholder="camera"
+                        suffixIcon={<Icon type="camera" style={{ color: "#FE8E14" }}></Icon>}
+                        defaultActiveFirstOption={false}
+                    >
+                        {this.state.cameraOptions}
+                    </Select>
+                }
+                {
+                    this.state.bSupportTorch &&
+                    <label onClick={this.onFlashlightClick.bind(this)} className="flashlight" style={{ transform: `translateY(${flashlightTranslateY}px)` }}>
+                        <Icon type="funnel-plot" style={{ fontSize: "2rem", color: "#FE8E14" }}></Icon>
+                    </label>
+                }
             </>
         )
     }
 }
 
 export default Scanner;
-export {Result,EachResult};
+export { Result, EachResult };
