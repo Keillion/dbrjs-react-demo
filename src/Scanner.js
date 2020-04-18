@@ -66,96 +66,6 @@ class Result extends React.Component {
 }
 
 
-class Canvas extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = ({
-            isDraw: false
-        });
-        this.canvas = React.createRef();
-    }
-
-    componentDidUpdate() {
-        let point = this.props.point;
-        let x1 = point[0].split(',')[0];
-        let y1 = point[0].split(',')[1];
-        let x2 = point[1].split(',')[0];
-        let y2 = point[1].split(',')[1];
-        let x3 = point[2].split(',')[0];
-        let y3 = point[2].split(',')[1];
-        let x4 = point[3].split(',')[0];
-        let y4 = point[3].split(',')[1];
-
-        let leftMin = Math.min(x1, x2, x3, x4);
-        //let rightMax = Math.max(x1, x2, x3, x4);
-        let topMin = Math.min(y1, y2, y3, y4);
-        //let bottomMax = Math.max(y1, y2, y3, y4);
-
-        let _x1 = x1 - leftMin;
-        let _x2 = x2 - leftMin;
-        let _x3 = x3 - leftMin;
-        let _x4 = x4 - leftMin;
-        let _y1 = y1 - topMin;
-        let _y2 = y2 - topMin;
-        let _y3 = y3 - topMin;
-        let _y4 = y4 - topMin;
-
-
-        var canvas = this.canvas.current;
-        //console.log(_x1,_y1,_x2,_y2,_x3,_y3,_x4,_y4);
-        if (canvas.getContext) {
-            //debugger;
-            let ctx = canvas.getContext("2d");
-            ctx.fillStyle = 'rgba(254,180,32,0.5)';
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            ctx.moveTo(_x1, _y1);
-            ctx.lineTo(_x2, _y2);
-            ctx.lineTo(_x3, _y3);
-            ctx.lineTo(_x4, _y4);
-            ctx.fill();
-        }
-
-    }
-
-    render() {
-        let point = this.props.point;
-        let x1 = point[0].split(',')[0];
-        let y1 = point[0].split(',')[1];
-        let x2 = point[1].split(',')[0];
-        let y2 = point[1].split(',')[1];
-        let x3 = point[2].split(',')[0];
-        let y3 = point[2].split(',')[1];
-        let x4 = point[3].split(',')[0];
-        let y4 = point[3].split(',')[1];
-
-        let leftMin = Math.min(x1, x2, x3, x4);
-        let rightMax = Math.max(x1, x2, x3, x4);
-        let topMin = Math.min(y1, y2, y3, y4);
-        let bottomMax = Math.max(y1, y2, y3, y4);
-        let cvsStyle = {
-            position: "absolute",
-            left: leftMin + "px",
-            top: topMin + "px",
-            //background:"#80008021", 
-        };
-        return (
-            <>
-                {
-                    <canvas
-                        ref={this.canvas} 
-                        width={rightMax - leftMin} 
-                        height={bottomMax - topMin}
-                        style={cvsStyle}>
-                    </canvas>
-                }
-            </>
-
-        )
-    }
-}
-
-
 // const Dynamsoft = window.Dynamsoft;
 var Dynamsoft;
 let scanner = null;
@@ -182,7 +92,7 @@ class Scanner extends React.Component {
         this.video = React.createRef();
 
     }
-
+    // onResize = () => this.forceUpdate()
 
     async showScanner() {
         var updateFrame = () => {
@@ -236,7 +146,6 @@ class Scanner extends React.Component {
 
             scanner && scanner.getRuntimeSettings().then(settings => {
                 if (!this.state.isFullRegion) {
-                    // console.log(left, right, top, bottom);
                     settings.region.regionLeft = Math.round(left * 100);
                     settings.region.regionRight = Math.round(right * 100);
                     settings.region.regionTop = Math.round(top * 100);
@@ -250,15 +159,14 @@ class Scanner extends React.Component {
                     settings.region.regionBottom = 100;
                     settings.region.regionMeasuredByPercentage = 1;
                 }
-                
+
                 scanner.updateRuntimeSettings(settings);
             })
 
         };
 
-
         scanner = await Dynamsoft.BarcodeScanner.createInstance();
-        scanner.setUIElement(document.getElementById("scanner"));
+        // scanner.setUIElement(document.getElementById("scanner"));
 
         await scanner.updateVideoSettings({ video: { width: this.state.resolution[0], height: this.state.resolution[1], facingMode: "environment" } });
         let settings = await scanner.getRuntimeSettings();
@@ -358,11 +266,13 @@ class Scanner extends React.Component {
     }
 
     componentWillMount() {
+        // window.addEventListener('resize', this.onResize);
         Dynamsoft = window.Dynamsoft;
         this.showScanner();
     }
 
     componentWillUnmount() {
+        // window.removeEventListener('resize', this.onResize);
         (async function () {
             scanner.onFrameRead = false;
             scanner !== null && scanner.close();
@@ -407,25 +317,6 @@ class Scanner extends React.Component {
     }
 
     render() {
-        const allCanvas = this.state.resultsPoint.map((eachResult, index) =>
-            <Canvas key={index} point={eachResult}></Canvas>
-        );
-        var resizeRate = 1;
-        var videoComputedWidth = 1280;
-        var videoComputedHeight = 720;
-        if (this.video.current) {
-            var videoComputedStyle = window.getComputedStyle(this.video.current);
-             videoComputedWidth = Math.round(parseFloat(videoComputedStyle.getPropertyValue('width')));
-             videoComputedHeight = Math.round(parseFloat(videoComputedStyle.getPropertyValue('height')))
-
-            console.log("width " + videoComputedWidth + " height " + videoComputedHeight)
-
-            if (videoComputedWidth < this.video.current.videoWidth) {
-                resizeRate = videoComputedWidth / this.video.current.videoWidth;
-                console.log('resize ' + resizeRate)
-            }
-        }
-
         var regionScale = 1.0 * this.props.region / 100;
         var regionHeight = 0.5 * regionScale * window.innerHeight;
         regionHeight = regionHeight >= 250 ? 250 : regionHeight;
@@ -480,14 +371,12 @@ class Scanner extends React.Component {
                     transitionLeaveTimeout={3500}
                     transitionEnterTimeout={2500}
                 >
-                    {
-                        !this.state.isOpen &&
-                        <div className='overlay'><Spin
-                            className="waiting"
-                            tip="Accessing Camera..."
-                            indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" }}></Icon>}>
-                        </Spin></div>
-                    }
+                    <div className='overlay' style={{ visibility: this.state.isOpen ? "hidden" : "visible" }}><Spin
+                        className="waiting"
+                        tip="Accessing Camera..."
+                        indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" }}></Icon>}>
+                    </Spin></div>
+
                 </ReactCSSTransitionGroup>
 
                 {/* <div id='scanner' style={{position:"absolute",width:"100%"}}>
@@ -499,18 +388,9 @@ class Scanner extends React.Component {
                 </div>
             </div> */}
 
-                <div id='scanner'>
-                    <div className="video-container">
-                        <video style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }} className='dbrScanner-video custom-video' playsInline={true} ref={this.video}></video>
-                        <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: this.state.resolution[0], height: this.state.resolution[1] }}>
-                            {allCanvas}
-                        </div>
-                    </div>
-                </div>
-
                 <Result resultsInfo={this.state.resultsInfo}></Result>
                 {
-                    this.state.cameraList.length &&
+                    this.state.cameraList.length > 0 &&
                     <Select onChange={this.onSwitchCamera.bind(this)}
                         style={{ position: "absolute", top: "60px", left: 0, width: "20%", maxWidth: 130, border: "0", color: "#FE8E14", opacity: "0.5" }}
                         // defaultValue={"camera:0"}

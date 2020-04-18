@@ -17,11 +17,11 @@ function RegionBtn(props){
 function ScannerArea(props){
     return(
         <div className="scanner-container">
-            <div className="frame" style={{width:props.region+"%",height:props.region+"%",maxWidth:"250px",maxHeight:"250px"}}>
-                {/* <label className="flashlight">
+            {/* <div className="frame" style={{width:props.region+"%",height:props.region+"%",maxWidth:"250px",maxHeight:"250px"}}>
+                 <label className="flashlight">
                     <Icon type="funnel-plot" style={{fontSize:"2rem",color:"#FE8E14"}}></Icon>
-                </label> */}
-            </div>
+                </label> 
+            </div> */}
             <div className="tip-info">
                 <p>Line up your barcode within the box.</p>
             </div>
