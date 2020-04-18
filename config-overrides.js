@@ -1,4 +1,4 @@
-const { override, fixBabelImports } = require('customize-cra');
+const { override, fixBabelImports, addLessLoader } = require('customize-cra');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CompressionPlugin = require('compression-webpack-plugin');
 
@@ -19,7 +19,7 @@ const addCustom = () => config => {
             require.resolve('@ant-design/icons/lib/dist')
         ]
     });
-    config.optimization.splitChunks.chunks = chunk=>{
+    config.optimization.splitChunks.chunks = chunk => {
         return chunk.name !== 'antd-icons';
     }
     // config.resolve.alias = {...config.resolve.alias, '@ant-design/icons/lib/dist$': 'src/icons.js'};
@@ -33,7 +33,11 @@ module.exports = {
         fixBabelImports('import', {
             libraryName: 'antd',
             libraryDirectory: 'es',
-            style: 'css',
-        })
+            style: true,
+        }),
+        addLessLoader({
+            javascriptEnabled: true,
+            modifyVars: { '@primary-color': '#FE8E14' },
+        }),
     )
 }

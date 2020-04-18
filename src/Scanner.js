@@ -234,7 +234,7 @@ class Scanner extends React.Component {
         } catch (e) {
             console.log(e);
             var config = {};
-            config.content = "No camera available!\n" + e;
+            config.content = "Camera is unavailable.\n" + e;
             config.icon = <Icon type="frown" style={{ color: "#FE8E14" }}></Icon>;
             message.config({
                 top: window.innerHeight / 2,
@@ -393,7 +393,7 @@ class Scanner extends React.Component {
                     this.state.cameraList.length > 0 &&
                     <Select onChange={this.onSwitchCamera.bind(this)}
                         style={{ position: "absolute", top: "60px", left: 0, width: "20%", maxWidth: 130, border: "0", color: "#FE8E14", opacity: "0.5" }}
-                        // defaultValue={"camera:0"}
+                        defaultValue={"camera"}
                         // placeholder="camera"
                         suffixIcon={<Icon type="camera" style={{ color: "#FE8E14" }}></Icon>}
                         defaultActiveFirstOption={false}

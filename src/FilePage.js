@@ -178,7 +178,8 @@ class FilePage extends React.Component {
         const uploadButton = (
             <div className="custom-upload-box">
                 <Icon type={this.state.loading ? "loading" : "upload"} style={{
-                    fontSize: '43px'
+                    fontSize: '43px',
+                    color: '#FE8E14'
                 }} />
                 <div className="ant-upload-text">Upload Image</div>
             </div>
