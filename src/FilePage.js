@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Upload, Icon, message, List, Typography } from "antd";
+import { PageHeader, Upload, Icon, message, List, Spin, Typography } from "antd";
 import "./FilePage.css";
 import "./Layout.css";
 import { settingsFromPage } from "./SettingPage";
@@ -89,7 +89,7 @@ class FilePage extends React.Component {
             getBase64(file, (imageUrl) =>
                 this.setState({
                     imageUrl,
-                    loading: false,
+                    loading: true,
                     isloadingNewFile: true,
                 })
             );
@@ -131,6 +131,7 @@ class FilePage extends React.Component {
                         resultPointsPerFrame.push(results[i].LocalizationResult.ResultPoints);
                     }
                     this.setState({
+                        loading: false,
                         resultPoints: resultPointsPerFrame,
                         resultsInfo: results,
                     });
@@ -199,6 +200,12 @@ class FilePage extends React.Component {
                 </div>
 
                 <div className="upload-container no-drag">
+                    <div className='overlay' style={{ visibility: this.state.loading ? "visible" : "hidden" }}><Spin
+                        className='waiting'
+                        tip="Searching for barcodes..."
+                        indicator={<Icon type="loading" spin style={{ fontSize: "2.5rem" }}></Icon>}>
+                    </Spin>
+                    </div>
                     <div
                         className="upload"
                         onClick={this.onSelectNewFile.bind(this)}

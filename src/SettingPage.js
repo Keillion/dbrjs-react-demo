@@ -31,51 +31,6 @@ let settingsFromPage = {
     timeout: 10000,
 };
 
-
-class VideoResolution extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: 0,
-        }
-    }
-
-    onSelectChange = e => {
-        settingsFromPage.resolution = e.target.res;
-    };
-
-
-    render() {
-        return (
-            <Menu
-                mode="inline"
-            >
-                <SubMenu
-                    key="resolution"
-                    title={
-                        <span>
-                            <Icon type="eye" />
-                            <span>Video Resolution</span>
-                        </span>
-                    }
-                >
-                    <Radio.Group style={{ paddingLeft: '20px' }} onChange={this.onSelectChange.bind(this)} defaultValue="1280,720">
-                        <Radio style={AttributeStyle} value={"3840,2160"} res={[3840, 2160]}>3840*2160</Radio>
-                        <Radio style={AttributeStyle} value={"2560,1440"} res={[2560, 1440]}>2560*1440</Radio>
-                        <Radio style={AttributeStyle} value={"1920,1080"} res={[1920, 1080]}>1920*1080</Radio>
-                        <Radio style={AttributeStyle} value={"1600,1200"} res={[1600, 1200]}>1600*1200</Radio>
-                        <Radio style={AttributeStyle} value={"1280,720"} res={[1280, 720]}>1280*720</Radio>
-                        <Radio style={AttributeStyle} value={"800,600"} res={[800, 600]}>800*600</Radio>
-                        <Radio style={AttributeStyle} value={"640,480"} res={[640, 480]}>640*480</Radio>
-                        <Radio style={AttributeStyle} value={"640,360"} res={[640, 360]}>640*360</Radio>
-                    </Radio.Group>
-                </SubMenu>
-            </Menu>
-        )
-    }
-}
-
-
 // const options=['1D','PDF417','QR Code','Data Matrix','Aztec Code'];
 var Dynamsoft = window.Dynamsoft;
 var _1D = Dynamsoft.EnumBarcodeFormat.BF_ONED;
@@ -275,14 +230,22 @@ class ScanSettings extends React.Component {
                         </span>
                     }
                 >
-                    <Radio.Group style={{ paddingLeft: '20px' }} onChange={this.onSelectChange.bind(this)} defaultValue='fast'>
-                        <Radio style={AttributeStyle} value="fast">Fastest</Radio>
-                        <Radio style={AttributeStyle} value="balance">Balance</Radio>
-                        <Radio style={AttributeStyle} value="accurate">Most Accurate</Radio>
+                    <Radio.Group style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)} defaultValue='fast'>
+                        <Row>
+                            <Col span={8}>
+                                <Radio style={AttributeStyle} value="fast">Fastest</Radio>
+                            </Col>
+                            <Col span={8}>
+                                <Radio style={AttributeStyle} value="balance">Balance</Radio>
+                            </Col>
+                            <Col span={8}>
+                                <Radio style={AttributeStyle} value="accurate">Most Accurate</Radio>
+                            </Col>
+                        </Row>
                     </Radio.Group>
-                </SubMenu>
-            </Menu>
-
+                </SubMenu > 
+            </Menu >
+            
         )
     }
 }
@@ -444,9 +407,6 @@ class SettingPage extends React.Component {
                             {/* Video Source */}
                             {/* <VideoSource></VideoSource>*/}
                             {/* <CutOff /> */}
-
-                            {/* Video Resolution */}
-                            <VideoResolution></VideoResolution>
 
                             <CutOff />
 
