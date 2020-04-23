@@ -18,7 +18,8 @@ const AttributeStyle = {
 
 const checkGroupStyle = {
     paddingLeft: "20px",
-    color: "antiquewhite"
+    color: "antiquewhite",
+    width: '100%'
 }
 
 let settingsFromPage = {
@@ -33,22 +34,43 @@ let settingsFromPage = {
 // const options=['1D','PDF417','QR Code','Data Matrix','Aztec Code'];
 var Dynamsoft = window.Dynamsoft;
 var _1D = Dynamsoft.EnumBarcodeFormat.BF_ONED;
+var _Code39 = Dynamsoft.EnumBarcodeFormat.BF_CODE_39;
+var _Code128 = Dynamsoft.EnumBarcodeFormat.BF_CODE_128;
+var _Code93 = Dynamsoft.EnumBarcodeFormat.BF_CODE_93;
+var _Codabar = Dynamsoft.EnumBarcodeFormat.BF_CODABAR;
+var _ITF = Dynamsoft.EnumBarcodeFormat.BF_ITF;
+var _EAN13 = Dynamsoft.EnumBarcodeFormat.BF_EAN_13;
+var _EAN8 = Dynamsoft.EnumBarcodeFormat.BF_EAN_8;
+var _UPCA = Dynamsoft.EnumBarcodeFormat.BF_UPC_A;
+var _UPCE = Dynamsoft.EnumBarcodeFormat.BF_UPC_E;
+var _Industrial25 = Dynamsoft.EnumBarcodeFormat.BF_INDUSTRIAL_25;
+var _Code39Extended = Dynamsoft.EnumBarcodeFormat.BF_CODE_39_EXTENDED;
+
 var _PDF417 = Dynamsoft.EnumBarcodeFormat.BF_PDF417;
 var _QRCode = Dynamsoft.EnumBarcodeFormat.BF_QR_CODE;
 var _DataMatrix = Dynamsoft.EnumBarcodeFormat.BF_DATAMATRIX;
 var _AztecCode = Dynamsoft.EnumBarcodeFormat.BF_AZTEC;
 var _MaxiCode = Dynamsoft.EnumBarcodeFormat.BF_MAXICODE;
-var _GS1DataBar = Dynamsoft.EnumBarcodeFormat.BF_GS1_DATABAR;
-var _GS1Composite = Dynamsoft.EnumBarcodeFormat.BF_GS1_COMPOSITE;
+var _MicroPDF417 = Dynamsoft.EnumBarcodeFormat.BF_MICRO_PDF417;
+var _MicroQR = Dynamsoft.EnumBarcodeFormat.BF_MICRO_QR;
 var _PatchCode = Dynamsoft.EnumBarcodeFormat.BF_PATCHCODE;
+var _GS1Composite = Dynamsoft.EnumBarcodeFormat.BF_GS1_COMPOSITE;
+var _GS1DataBar = Dynamsoft.EnumBarcodeFormat.BF_GS1_DATABAR;
+// var _PostalCode = Dynamsoft.EnumBarcodeFormat_2.BF2_POSTALCODE;
+// var _DotCode = Dynamsoft.EnumBarcodeFormat_2.BF2_DOTCODE;
 
-const defaultCheckList = ["1D", "PDF417", "QRCode", "DataMatrix", "AztecCode", "MaxiCode", "GS1DataBar", "GS1Composite", "PatchCode"];
+
+const allOneDOptions = ['Code 39', 'Code 128', 'Code 93', 'CODABAR', 'ITF', 'EAN 13', 'EAN 8', 'UPC A', 'UPC E', 'Industrial 25', 'Code 39 Extended']
+
+const allTwoDOptions = ['PDF417', 'QR Code', 'Data Matrix', 'Aztec Code', 'MaxiCode', 'Micro PDF417', 'Micro QR', 'Patch Code', 'GS1 Composite', 'GS1 DataBar'];
 if (!Dynamsoft.BarcodeReader._bUseFullFeature) {
-    defaultCheckList.length = 4;
+    allTwoDOptions.length = 3;
 }
-const formats = { "1D": _1D, "PDF417": _PDF417, "QRCode": _QRCode, "DataMatrix": _DataMatrix, "AztecCode": _AztecCode, "MaxiCode": _MaxiCode, "GS1DataBar": _GS1DataBar, "GS1Composite": _GS1Composite, "PatchCode": _PatchCode };
+
+const formats = { "1D": _1D, 'Code 39': _Code39, 'Code 128': _Code128, 'Code 93': _Code93, 'CODABAR': _Codabar, 'ITF': _ITF, 'EAN 13': _EAN13, 'EAN 8': _EAN8, 'UPC A': _UPCA, 'UPC E': _UPCE, 'Industrial 25': _Industrial25, 'Code 39 Extended': _Code39Extended, "PDF417": _PDF417, "QR Code": _QRCode, "Data Matrix": _DataMatrix, "Aztec Code": _AztecCode, "MaxiCode": _MaxiCode, 'Micro PDF417': _MicroPDF417, 'Micro QR': _MicroQR, 'Patch Code': _PatchCode, "GS1 DataBar": _GS1DataBar, "GS1 Composite": _GS1Composite };
 var _all = 0;
-defaultCheckList.forEach(item => { _all += formats[item] });
+allOneDOptions.forEach(item => { _all += formats[item] });
+allTwoDOptions.slice(0,3).forEach(item => { _all += formats[item] });
 settingsFromPage.barcodeFormat = _all;
 
 
@@ -56,21 +78,45 @@ class BarcodeFormat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            checkedList: defaultCheckList,
+            OneDcheckedList: allOneDOptions,
+            othersCheckedList: allTwoDOptions,
+            indeterminate: false,
+            OneDcheckAll: true
         }
+    }
+
+    onOneDChange = checkedList => {
+        this.setState({
+            OneDcheckedList: checkedList,
+            indeterminate: !!checkedList.length && checkedList.length < allOneDOptions.length,
+            OneDcheckAll: checkedList.length === allOneDOptions.length
+        }, this.getBarcodeList)
+    }
+
+    getBarcodeList = () => {
+        settingsFromPage.barcodeFormat = 0;
+        this.state.OneDcheckedList.map((format) => {
+            settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat | formats[format];
+        })
+        this.state.othersCheckedList.map((format) => {
+            settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat | formats[format];
+        })
+        console.log(settingsFromPage.barcodeFormat)
     }
 
     onChange = checkedList => {
         this.setState({
-            checkedList,
-        })
+            othersCheckedList: checkedList
+        }, this.getBarcodeList)
     }
 
-    onSelectFormat = e => {
-        // console.log(e.target.format,e.target.value,this.state.checkedList.indexOf(e.target.value)!==-1);
-        // this.state.checkedList.indexOf(e.target.value)!==-1?(settingsFromPage.barcodeFormat -= e.target.format):(settingsFromPage.barcodeFormat += e.target.format);
-        this.state.checkedList.indexOf(e.target.value) !== -1 ? (settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat & (~e.target.format)) : (settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat | e.target.format);
-    }
+    onOneDCheckAllChange = e => {
+        this.setState({
+            OneDcheckedList: e.target.checked ? allOneDOptions : [],
+            indeterminate: false,
+            OneDcheckAll: e.target.checked,
+        }, this.getBarcodeList);
+    };
 
     onClickMoreFormat = () => {
 
@@ -103,22 +149,47 @@ class BarcodeFormat extends React.Component {
                     }
                 >
                     <div>
+                        <div className="site-checkbox-all-wrapper">
+                            <Checkbox
+                                indeterminate={this.state.indeterminate}
+                                onChange={this.onOneDCheckAllChange}
+                                checked={this.state.OneDcheckAll}
+                            >1D Barcodes</Checkbox>
+                        </div>
                         <Checkbox.Group
-                            value={this.state.checkedList}
-                            onChange={this.onChange.bind(this)}
+                            value={this.state.OneDcheckedList}
+                            onChange={this.onOneDChange}
                             style={checkGroupStyle}
                         >
                             <Row>
                                 {
-                                    defaultCheckList.map((item, index) => {
+                                    allOneDOptions.map((item, index) => {
                                         var key = item;
-                                        return (<Col span={12} style={AttributeStyle} key={key + index}>
-                                            <Checkbox value={key} format={formats[key]} onChange={this.onSelectFormat.bind(this)}>{key}</Checkbox>
+                                        return (<Col span={8} style={AttributeStyle} key={key + index}>
+                                            <Checkbox value={key} format={formats[key]} >{key}</Checkbox>
+                                        </Col>)
+                                    })
+                                }
+                            </Row>
+                        </Checkbox.Group>
+                        <Divider dashed />
+                        <Checkbox.Group
+                            // value={this.state.othersCheckedList}
+                            onChange={this.onChange}
+                            style={checkGroupStyle}
+                            defaultValue={this.state.othersCheckedList.slice(0, 3)}
+                        >
+                            <Row>
+                                {
+                                    allTwoDOptions.map((item, index) => {
+                                        var key = item;
+                                        return (<Col span={8} style={AttributeStyle} key={key + index}>
+                                            <Checkbox value={key} format={formats[key]} >{key}</Checkbox> 
                                         </Col>)
                                     }
                                     )
                                 }
-                                <Col span={12} push={12} style={{ padding: "15px 0" }}>
+                                <Col span={8} style={{ padding: "15px 0" }}>
                                     {
                                         !Dynamsoft.BarcodeReader._bUseFullFeature &&
                                         <Button icon="plus" type="primary" size="small" onClick={this.onClickMoreFormat.bind(this)}>More Formats</Button>
@@ -186,7 +257,6 @@ class ScanSettings extends React.Component {
                     </Radio.Group>
                 </SubMenu > 
             </Menu >
-            
         )
     }
 }

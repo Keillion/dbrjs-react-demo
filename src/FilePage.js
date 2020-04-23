@@ -121,9 +121,7 @@ class FilePage extends React.Component {
         reader
             .decode(file)
             .then((results) => {
-                console.log(this._image)
                 if (results.length > 0) {
-                    console.log(results);
                     var txts = [];
                     let resultPointsPerFrame = [];
                     for (var i = 0; i < results.length; ++i) {
@@ -158,7 +156,6 @@ class FilePage extends React.Component {
                     <Icon type="frown" style={{ color: "#FE8E14" }}></Icon>
                 );
                 message.open(config);
-                console.log(e);
             });
     }
 
@@ -187,16 +184,16 @@ class FilePage extends React.Component {
         );
         const { imageUrl } = this.state;
 
-        if (this._image.current) {
+        // if (this._image.current) {
             // console.log(this._image.current.width + " x " + this._image.current.height)
             // console.log(this.state.resultsInfo)
-        }
+        // }
 
         return (
             <>
                 {/* show the file page */}
                 <div className="file-container no-drag">
-                    <PageHeader onBack={this.props.onBackClick} title="Files" />
+                    <PageHeader onBack={this.props.onBackClick} title="Read Barcode from Images" />
                 </div>
 
                 <div className="upload-container no-drag">
