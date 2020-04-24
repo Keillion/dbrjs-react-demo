@@ -159,7 +159,8 @@ class Scanner extends React.Component {
                     settings.region.regionBottom = 100;
                     settings.region.regionMeasuredByPercentage = 1;
                 }
-                // console.log(await scanner.getRuntimeSettings())
+                // console.log(await scanner.getRuntimeSettings()) 
+                // console.log(await scanner.getScanSettings())
                 scanner.updateRuntimeSettings(settings);
             })
 
@@ -374,7 +375,7 @@ class Scanner extends React.Component {
                     <div className='overlay' style={{ visibility: this.state.isOpen ? "hidden" : "visible" }}><Spin
                         className="waiting"
                         tip="Accessing Camera..."
-                        indicator={<Icon type="smile" spin style={{ fontSize: "2.5rem" }}></Icon>}>
+                        indicator={<Icon type="video-camera" spin style={{ fontSize: "2.5rem" }}></Icon>}>
                     </Spin></div>
 
                 </ReactCSSTransitionGroup>

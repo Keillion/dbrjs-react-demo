@@ -25,7 +25,7 @@ const checkGroupStyle = {
 let settingsFromPage = {
     resolution: [1280, 720],
     barcodeFormat: undefined,
-    localization: [2, 0, 0, 0, 0, 0, 0, 0],
+    localization: [16, 2, 0, 0, 0, 0, 0, 0],
     deblurlevel: 0,
     scaleDownThreshold: 2300,
     timeout: 10000,
@@ -232,7 +232,7 @@ class ScanSettings extends React.Component {
             settingsFromPage.scaleDownThreshold = 2300;
             settingsFromPage.timeout = 100000;
         } else { //speed
-            settingsFromPage.localization = [2, 0, 0, 0, 0, 0, 0, 0];
+            settingsFromPage.localization = [16, 2, 0, 0, 0, 0, 0, 0];
             settingsFromPage.deblurlevel = 0;
             settingsFromPage.expectedBarcodesCount = 0;
             settingsFromPage.scaleDownThreshold = 2300;
