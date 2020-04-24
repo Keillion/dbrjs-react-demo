@@ -193,7 +193,7 @@ class FilePage extends React.Component {
             <>
                 {/* show the file page */}
                 <div className="file-container no-drag">
-                    <PageHeader onBack={this.props.onBackClick} title="Read Barcode from Images" />
+                    <PageHeader onBack={this.props.onBackClick} title="Read Barcode from Image" />
                 </div>
 
                 <div className="upload-container no-drag">

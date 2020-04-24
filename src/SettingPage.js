@@ -79,7 +79,7 @@ class BarcodeFormat extends React.Component {
         super(props);
         this.state = {
             OneDcheckedList: allOneDOptions,
-            othersCheckedList: allTwoDOptions,
+            othersCheckedList: allTwoDOptions.slice(0,3),
             indeterminate: false,
             OneDcheckAll: true
         }
@@ -95,13 +95,23 @@ class BarcodeFormat extends React.Component {
 
     getBarcodeList = () => {
         settingsFromPage.barcodeFormat = 0;
+        if (!this.state.OneDcheckedList.length && !this.state.othersCheckedList.length) {
+            this.setState({
+                OneDcheckAll: true,
+                OneDcheckedList: allOneDOptions
+            })
+            alert('Please select at least one barcode.')
+            settingsFromPage.barcodeFormat = formats["1D"];
+            return;
+        }
+
         this.state.OneDcheckedList.map((format) => {
             settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat | formats[format];
         })
         this.state.othersCheckedList.map((format) => {
             settingsFromPage.barcodeFormat = settingsFromPage.barcodeFormat | formats[format];
         })
-        console.log(settingsFromPage.barcodeFormat)
+        // console.log(settingsFromPage.barcodeFormat)
     }
 
     onChange = checkedList => {

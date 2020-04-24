@@ -159,7 +159,7 @@ class Scanner extends React.Component {
                     settings.region.regionBottom = 100;
                     settings.region.regionMeasuredByPercentage = 1;
                 }
-
+                // console.log(await scanner.getRuntimeSettings())
                 scanner.updateRuntimeSettings(settings);
             })
 
