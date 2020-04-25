@@ -29,6 +29,7 @@ let settingsFromPage = {
     deblurlevel: 0,
     scaleDownThreshold: 2300,
     timeout: 10000,
+    usecase: undefined,
 };
 
 // const options=['1D','PDF417','QR Code','Data Matrix','Aztec Code'];
@@ -59,6 +60,74 @@ var _GS1DataBar = Dynamsoft.EnumBarcodeFormat.BF_GS1_DATABAR;
 // var _PostalCode = Dynamsoft.EnumBarcodeFormat_2.BF2_POSTALCODE;
 // var _DotCode = Dynamsoft.EnumBarcodeFormat_2.BF2_DOTCODE;
 
+class UseCases extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: 0,
+        }
+    }
+
+    onSelectChange = e => {
+        if (e.target.value === "VIN") {
+            settingsFromPage.usecase = "VIN"
+        } else if (e.target.value  === "DLID") {
+            settingsFromPage.usecase = "DLID";
+        } else {
+            // settingsFromPage.barcodeFormat = _1D + _QRCode + _PDF417 + _DataMatrix;
+        }
+        this.props.onUseCaseSelected(e.target.value )
+        this.props.onBackClick();
+    };
+
+
+    render() {
+        return (
+            <Menu
+                mode="inline"
+            >
+                <SubMenu
+                    key="usecases"
+                    title={
+                        <span>
+                            <Icon type="eye" />
+                            <span>Use Cases</span>
+                        </span>
+                    }
+                >
+                    <Radio.Group style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}>
+                        <Row>
+                            <Col span={12} style={AttributeStyle} >
+                                <Radio value="VIN">
+                                    Vehicle Identification Number (VIN)
+                                </Radio>
+                            </Col>
+                            <Col span={12} style={AttributeStyle}>
+                                <Radio value="DLID">
+                                    Driver's License (US/Canada)
+                                </Radio>
+                            </Col>
+                        </Row>
+                    </Radio.Group>
+                    {/* <Checkbox.Group style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}>
+                        <Row>
+                            <Col span={12} style={AttributeStyle} >
+                                <Checkbox value="VIN">
+                                    Vehicle Identification Number (VIN)
+                                </Checkbox>
+                            </Col>
+                            <Col span={12} style={AttributeStyle}>
+                                <Checkbox value="DLID">
+                                    Driver's License (US/Canada)
+                                </Checkbox>
+                            </Col>
+                        </Row>
+                    </Checkbox.Group> */}
+                </SubMenu>
+            </Menu>
+        )
+    }
+}
 
 const allOneDOptions = ['Code 39', 'Code 128', 'Code 93', 'CODABAR', 'ITF', 'EAN 13', 'EAN 8', 'UPC A', 'UPC E', 'Industrial 25', 'Code 39 Extended']
 
@@ -70,7 +139,7 @@ if (!Dynamsoft.BarcodeReader._bUseFullFeature) {
 const formats = { "1D": _1D, 'Code 39': _Code39, 'Code 128': _Code128, 'Code 93': _Code93, 'CODABAR': _Codabar, 'ITF': _ITF, 'EAN 13': _EAN13, 'EAN 8': _EAN8, 'UPC A': _UPCA, 'UPC E': _UPCE, 'Industrial 25': _Industrial25, 'Code 39 Extended': _Code39Extended, "PDF417": _PDF417, "QR Code": _QRCode, "Data Matrix": _DataMatrix, "Aztec Code": _AztecCode, "MaxiCode": _MaxiCode, 'Micro PDF417': _MicroPDF417, 'Micro QR': _MicroQR, 'Patch Code': _PatchCode, "GS1 DataBar": _GS1DataBar, "GS1 Composite": _GS1Composite };
 var _all = 0;
 allOneDOptions.forEach(item => { _all += formats[item] });
-allTwoDOptions.slice(0,3).forEach(item => { _all += formats[item] });
+allTwoDOptions.slice(0, 3).forEach(item => { _all += formats[item] });
 settingsFromPage.barcodeFormat = _all;
 
 
@@ -79,9 +148,26 @@ class BarcodeFormat extends React.Component {
         super(props);
         this.state = {
             OneDcheckedList: allOneDOptions,
-            othersCheckedList: allTwoDOptions.slice(0,3),
+            othersCheckedList: allTwoDOptions.slice(0, 3),
             indeterminate: false,
             OneDcheckAll: true
+        }
+    }
+
+    componentWillReceiveProps = (nextProps) => {
+        if (nextProps.usecase && nextProps.usecase !== this.props.usecase) {
+            if (nextProps.usecase === "VIN") {
+                this.setState({
+                    OneDcheckedList: ["Code 39", "Code 128", "Code 93", "CODABAR", "ITF", "Industrial 25", "Code 39 Extended"],
+                    othersCheckedList: []
+                }, this.getBarcodeList)
+            } else if(nextProps.usecase === "DLID") {
+                this.setState({
+                    OneDcheckedList: [],
+                    OneDcheckAll: false,
+                    othersCheckedList: ["PDF417"]
+                }, this.getBarcodeList)
+            }
         }
     }
 
@@ -184,7 +270,7 @@ class BarcodeFormat extends React.Component {
                         </Checkbox.Group>
                         <Divider dashed />
                         <Checkbox.Group
-                            // value={this.state.othersCheckedList}
+                            value={this.state.othersCheckedList}
                             onChange={this.onChange}
                             style={checkGroupStyle}
                             defaultValue={this.state.othersCheckedList.slice(0, 3)}
@@ -394,6 +480,11 @@ class SettingPage extends React.Component {
         }
     }
 
+    onUseCaseSelected = usecase => {
+        this.setState({
+            usecase,
+        })
+    }
 
     render() {
         return (
@@ -429,10 +520,12 @@ class SettingPage extends React.Component {
                             {/* <VideoSource></VideoSource>*/}
                             {/* <CutOff /> */}
 
+                            <UseCases onBackClick={this.props.onBackClick} onUseCaseSelected={this.onUseCaseSelected}></UseCases>
+
                             <CutOff />
 
                             {/* //Barcode Format */}
-                            <BarcodeFormat></BarcodeFormat>
+                            <BarcodeFormat usecase={this.state.usecase}></BarcodeFormat>
 
                             <CutOff />
 

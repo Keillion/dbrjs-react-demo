@@ -146,11 +146,19 @@ class Scanner extends React.Component {
 
             scanner && scanner.getRuntimeSettings().then(settings => {
                 if (!this.state.isFullRegion) {
-                    settings.region.regionLeft = Math.round(left * 100);
-                    settings.region.regionRight = Math.round(right * 100);
-                    settings.region.regionTop = Math.round(top * 100);
-                    settings.region.regionBottom = Math.round(bottom * 100);
-                    settings.region.regionMeasuredByPercentage = 1;
+                    if (this.state.usecase === 'VIN' || this.state.usecase === 'DLID') {
+                        settings.region.regionLeft = Math.round(left * 100)+3;
+                        settings.region.regionRight = Math.round(right * 100)-3;
+                        settings.region.regionTop = Math.round(top * 100)-10;
+                        settings.region.regionBottom = Math.round(bottom * 100)+10;
+                        settings.region.regionMeasuredByPercentage = 1;
+                    }else {
+                        settings.region.regionLeft = Math.round(left * 100);
+                        settings.region.regionRight = Math.round(right * 100);
+                        settings.region.regionTop = Math.round(top * 100);
+                        settings.region.regionBottom = Math.round(bottom * 100);
+                        settings.region.regionMeasuredByPercentage = 1;
+                    }
                 }
                 else {
                     settings.region.regionLeft = 0;
@@ -167,7 +175,7 @@ class Scanner extends React.Component {
         };
 
         scanner = await Dynamsoft.BarcodeScanner.createInstance();
-        // scanner.setUIElement(document.getElementById("scanner"));
+        // scanner.setUIElement(document.getElementById("dbrScanner"));
 
         await scanner.updateVideoSettings({ video: { width: this.state.resolution[0], height: this.state.resolution[1], facingMode: "environment" } });
         let settings = await scanner.getRuntimeSettings();
@@ -388,6 +396,11 @@ class Scanner extends React.Component {
                     </div>
                 </div>
             </div> */}
+
+                {/* <div id='dbrScanner' style={{ width: "100%", height: "100%", minWidth: "100px", minHeight: "100px", background: "#eee", position: "relative", zIndex: "-1" }}>
+                    <video className="dbrScanner-video" playsInline={true} style={{ width: "100%", height: "100%", position: "absolute", left: "0", top: "0", objectFit: "cover" }}></video>
+                    <canvas className="dbrScanner-cvs-drawarea" style={{ width: "100%", height: "100%", position: "absolute", left: "0", top: "0", objectFit:"cover" }}></canvas>
+                </div> */}
 
                 <Result resultsInfo={this.state.resultsInfo}></Result>
                 {
