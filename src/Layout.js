@@ -8,7 +8,7 @@ import Scanner from "./Scanner";
 function RegionBtn(props){
     return(
         <label className="region" onClick={props.handleRegion}>
-            <Icon type={props.isFullRegion?"fullscreen-exit":"fullscreen"} style={{fontSize:"2rem",color:"#FE8E14"}}></Icon>
+            <Icon title="Full Image Localization" type={props.isFullRegion?"fullscreen-exit":"fullscreen"} style={{fontSize:"2rem",color:"#FE8E14"}}></Icon>
         </label>
     )
 }
@@ -17,13 +17,13 @@ function RegionBtn(props){
 function ScannerArea(props){
     return(
         <div className="scanner-container">
-            <div className="frame" style={{width:props.region+"%",height:props.region+"%",maxWidth:"250px",maxHeight:"250px"}}>
-                {/* <label className="flashlight">
+            {/* <div className="frame" style={{width:props.region+"%",height:props.region+"%",maxWidth:"250px",maxHeight:"250px"}}>
+                 <label className="flashlight">
                     <Icon type="funnel-plot" style={{fontSize:"2rem",color:"#FE8E14"}}></Icon>
-                </label> */}
-            </div>
+                </label> 
+            </div> */}
             <div className="tip-info">
-                <p>Put the code in the box and scan it automatically.</p>
+                <p>Line up your barcode within the box.</p>
             </div>
         </div>
     )
@@ -96,7 +96,7 @@ class Main extends React.Component{
         })       
     }
 
-    fullSceenClickHandler(event){
+    fullScreenClickHandler(event){
         this.switchFullScreen();
     }   
 
@@ -110,7 +110,8 @@ class Main extends React.Component{
                     <ScannerArea region={regionSize}></ScannerArea>
                 }
                 <div className="dynam-info">
-                    <a href="https://www.dynamsoft.com" ><img src="img/logo-dynamsoft-blackBg-190x47.png" alt="logo"></img></a>
+                    <img src="img/logo-dynamsoft-blackBg-190x47.png" alt="logo"></img><br/>
+                    Interested? <a href="https://www.dynamsoft.com/Company/Contact.aspx" style={{ color: "white"}}><u>Let's talk!</u></a>
                 </div>
                 <RegionBtn handleRegion={this.handleRegion.bind(this)} isFullRegion={this.state.isFullRegion}></RegionBtn>
             </div>
@@ -121,14 +122,14 @@ class Main extends React.Component{
             {
                 this.state.isShowSettingBtn && 
                 <div className="settingBtn-container" >
-                    <Icon type="setting" style={{fontSize:"2rem",color:"#FE8E14"}} onClick={this.handleShowSettingPage.bind(this)} ></Icon>
+                    <Icon title="Settings" type="setting" style={{fontSize:"2rem",color:"#FE8E14"}} onClick={this.handleShowSettingPage.bind(this)} ></Icon>
                 </div>
             }
             <div className="double-click" >
-                <label onClick={this.fullSceenClickHandler.bind(this)}>click {this.state.isFullScreen&&"exit"} full screen</label>
+                <label onClick={this.fullScreenClickHandler.bind(this)}>click {this.state.isFullScreen&&"exit"} full screen</label>
             </div>
             <div className="selImgBtn-container">
-                <Icon type="plus" style={{fontSize:"2rem",color:"#FE8E14"}} onClick={this.handleShowFilePage.bind(this)}></Icon>
+                <Icon title="Read Barcode from Image"type="plus" style={{fontSize:"2rem",color:"#FE8E14"}} onClick={this.handleShowFilePage.bind(this)}></Icon>
             </div>
             
             <div style={this.state.settingDisplayStyle}>
