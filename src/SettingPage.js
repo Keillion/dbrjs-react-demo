@@ -60,6 +60,8 @@ var _GS1DataBar = Dynamsoft.EnumBarcodeFormat.BF_GS1_DATABAR;
 // var _PostalCode = Dynamsoft.EnumBarcodeFormat_2.BF2_POSTALCODE;
 // var _DotCode = Dynamsoft.EnumBarcodeFormat_2.BF2_DOTCODE;
 
+const cases = [{ label: 'Vehicle Identification Number (VIN)', value: 'VIN'}, {
+    label: "Driver's License", value: 'DLID'}];
 class UseCases extends React.Component {
     constructor(props) {
         super(props);
@@ -68,16 +70,35 @@ class UseCases extends React.Component {
         }
     }
 
+    componentWillReceiveProps = (nextProps) => {
+        if (!nextProps.usecase && nextProps.usecase !== this.props.usecase) {
+            this.setState({
+                value: nextProps.usecase
+            })
+            settingsFromPage.usecase = nextProps.usecase;
+        }
+    }
+
     onSelectChange = e => {
         if (e.target.value === "VIN") {
+            this.setState({
+                value: e.target.value
+            })
             settingsFromPage.usecase = "VIN"
-        } else if (e.target.value  === "DLID") {
+            this.props.onUseCaseSelected(e.target.value)
+        } else if (e.target.value === "DLID") {
+            this.setState({
+                value: e.target.value
+            })
             settingsFromPage.usecase = "DLID";
+            this.props.onUseCaseSelected(e.target.value)
         } else {
-            // settingsFromPage.barcodeFormat = _1D + _QRCode + _PDF417 + _DataMatrix;
+            this.setState({
+                value: undefined
+            }); 
+            settingsFromPage.usecase = undefined;
         }
-        this.props.onUseCaseSelected(e.target.value )
-        this.props.onBackClick();
+        // this.props.onBackClick();
     };
 
 
@@ -95,7 +116,8 @@ class UseCases extends React.Component {
                         </span>
                     }
                 >
-                    <Radio.Group style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}>
+                    <Radio.Group options={cases} value={this.state.value} style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}/>
+                    {/* <Radio.Group options={["VIN", "DLID"]} style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}>
                         <Row>
                             <Col span={12} style={AttributeStyle} >
                                 <Radio value="VIN">
@@ -108,7 +130,7 @@ class UseCases extends React.Component {
                                 </Radio>
                             </Col>
                         </Row>
-                    </Radio.Group>
+                    </Radio.Group> */}
                     {/* <Checkbox.Group style={{ paddingLeft: '20px', width: '100%' }} onChange={this.onSelectChange.bind(this)}>
                         <Row>
                             <Col span={12} style={AttributeStyle} >
@@ -159,12 +181,15 @@ class BarcodeFormat extends React.Component {
             if (nextProps.usecase === "VIN") {
                 this.setState({
                     OneDcheckedList: ["Code 39", "Code 128", "Code 93", "CODABAR", "ITF", "Industrial 25", "Code 39 Extended"],
+                    indeterminate: true,
+                    OneDcheckAll: false,
                     othersCheckedList: []
                 }, this.getBarcodeList)
             } else if(nextProps.usecase === "DLID") {
                 this.setState({
                     OneDcheckedList: [],
-                    OneDcheckAll: false,
+                    OneDcheckAll: false, 
+                    indeterminate: false,
                     othersCheckedList: ["PDF417"]
                 }, this.getBarcodeList)
             }
@@ -177,6 +202,7 @@ class BarcodeFormat extends React.Component {
             indeterminate: !!checkedList.length && checkedList.length < allOneDOptions.length,
             OneDcheckAll: checkedList.length === allOneDOptions.length
         }, this.getBarcodeList)
+        this.props.onAnyBarcodeChecked()
     }
 
     getBarcodeList = () => {
@@ -204,6 +230,7 @@ class BarcodeFormat extends React.Component {
         this.setState({
             othersCheckedList: checkedList
         }, this.getBarcodeList)
+        this.props.onAnyBarcodeChecked()
     }
 
     onOneDCheckAllChange = e => {
@@ -212,6 +239,7 @@ class BarcodeFormat extends React.Component {
             indeterminate: false,
             OneDcheckAll: e.target.checked,
         }, this.getBarcodeList);
+        this.props.onAnyBarcodeChecked()
     };
 
     onClickMoreFormat = () => {
@@ -486,6 +514,10 @@ class SettingPage extends React.Component {
         })
     }
 
+    onAnyBarcodeChecked = () => {
+        this.onUseCaseSelected(null);
+    }
+
     render() {
         return (
             <>
@@ -520,12 +552,12 @@ class SettingPage extends React.Component {
                             {/* <VideoSource></VideoSource>*/}
                             {/* <CutOff /> */}
 
-                            <UseCases onBackClick={this.props.onBackClick} onUseCaseSelected={this.onUseCaseSelected}></UseCases>
+                            <UseCases onBackClick={this.props.onBackClick} onUseCaseSelected={this.onUseCaseSelected} usecase={this.state.usecase}></UseCases>
 
                             <CutOff />
 
                             {/* //Barcode Format */}
-                            <BarcodeFormat usecase={this.state.usecase}></BarcodeFormat>
+                            <BarcodeFormat onAnyBarcodeChecked={this.onAnyBarcodeChecked} usecase={this.state.usecase}></BarcodeFormat>
 
                             <CutOff />
 

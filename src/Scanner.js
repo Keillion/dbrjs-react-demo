@@ -175,7 +175,7 @@ class Scanner extends React.Component {
         };
 
         scanner = await Dynamsoft.BarcodeScanner.createInstance();
-        // scanner.setUIElement(document.getElementById("dbrScanner"));
+        scanner.setUIElement(document.getElementById("dbrScanner"));
 
         await scanner.updateVideoSettings({ video: { width: this.state.resolution[0], height: this.state.resolution[1], facingMode: "environment" } });
         let settings = await scanner.getRuntimeSettings();
@@ -397,10 +397,10 @@ class Scanner extends React.Component {
                 </div>
             </div> */}
 
-                {/* <div id='dbrScanner' style={{ width: "100%", height: "100%", minWidth: "100px", minHeight: "100px", background: "#eee", position: "relative", zIndex: "-1" }}>
+                <div id='dbrScanner' style={{ width: "100%", height: "100%", minWidth: "100px", minHeight: "100px", background: "#eee", position: "relative", zIndex: "-1" }}>
                     <video className="dbrScanner-video" playsInline={true} style={{ width: "100%", height: "100%", position: "absolute", left: "0", top: "0", objectFit: "cover" }}></video>
-                    <canvas className="dbrScanner-cvs-drawarea" style={{ width: "100%", height: "100%", position: "absolute", left: "0", top: "0", objectFit:"cover" }}></canvas>
-                </div> */}
+                    <canvas className="dbrScanner-cvs-drawarea" style={{ width: "100%", height: "100%", position: "absolute", left: "0", top: "0"}}></canvas>
+                </div>
 
                 <Result resultsInfo={this.state.resultsInfo}></Result>
                 {
